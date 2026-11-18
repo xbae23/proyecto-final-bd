@@ -4,57 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f7f7f5" />
-  <meta name="description" content="Inventario Studio: sistema de inventario, ventas y reportes conectado a Oracle FreeSQL." />
-  <title>Inventario Studio — Control en calma</title>
+  <meta name="description" content="Inventario Studio: sistema de inventario y ventas conectado a Oracle FreeSQL." />
+  <title>Inventario Studio — Sistema de inventario y ventas</title>
   <link rel="stylesheet" href="/style.css" />
   <link rel="stylesheet" href="/roles.css" />
+  <link rel="stylesheet" href="/workspace.css" />
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#inicio" aria-label="Inventario Studio, inicio"><span class="brand-mark">i<span>.</span></span><span>inventario<span class="brand-light">studio</span></span></a>
-    <nav class="topnav" aria-label="Navegación principal">
-      <a href="#inicio">Inicio</a><a href="#workspace">Plataforma</a><a href="#insights">Análisis</a>
-    </nav>
-    <a class="top-cta" href="#workspace">Abrir sistema <span>↗</span></a>
-  </header>
-
-  <main>
-    <section class="hero" id="inicio">
-      <div class="hero-glow"></div>
-      <div class="eyebrow"><span class="pulse"></span> TU NEGOCIO, EN ORDEN</div>
-      <h1>Todo en su lugar.<br><em>Todo bajo control.</em></h1>
-      <p>Productos, movimientos y ventas en un solo espacio. Una forma más clara de entender tu inventario y tomar mejores decisiones.</p>
-      <div class="hero-actions"><a class="button primary" href="#workspace">Explorar plataforma <span>↗</span></a><a class="button ghost" href="#insights">Ver reportes <span>↓</span></a></div>
-      <div class="hero-meta"><span>01 / 04</span><span>INVENTARIO • VENTAS • ANÁLISIS</span><span>HECHO PARA CRECER</span></div>
-    </section>
-
-    <section class="workspace-section" id="workspace">
-      <div class="section-intro"><div><div class="section-kicker">TU ESPACIO DE TRABAJO</div><h2>La claridad se ve<br>en cada detalle<span class="dot">.</span></h2></div><p>Una vista completa de lo que tienes, lo que entra y lo que vendes. Datos reales de tu base SQL, listos para explorar.</p></div>
-      <div class="app-shell">
-        <aside class="sidebar">
-          <div class="side-brand"><span class="side-icon">i.</span><span>Studio <small>WORKSPACE</small></span></div>
-          <div class="side-label">PRINCIPAL</div>
-          <button class="nav-item active" data-view="overview"><span class="nav-icon">▦</span> Resumen <span class="nav-arrow">›</span></button>
-          <button class="nav-item" data-view="products"><span class="nav-icon">□</span> Productos <span class="nav-arrow">›</span></button>
-          <button class="nav-item" data-view="movements"><span class="nav-icon">⇄</span> Movimientos <span class="nav-arrow">›</span></button>
-          <button class="nav-item" data-view="sales"><span class="nav-icon">◫</span> Ventas y facturas <span class="nav-arrow">›</span></button>
-          <div class="side-label second">GESTIÓN</div>
-          <button class="nav-item" data-view="contacts"><span class="nav-icon">♧</span> Directorio <span class="nav-arrow">›</span></button>
-          <button class="nav-item" data-view="reports"><span class="nav-icon">◴</span> Reportes <span class="nav-arrow">›</span></button>
-          <button class="nav-item admin-only" data-view="users"><span class="nav-icon">◎</span> Usuarios y roles <span class="nav-arrow">›</span></button>
-          <div class="side-bottom"><span class="avatar">IS</span><span><strong>Inventario Studio</strong><small>Proyecto de bases de datos</small></span><span class="side-dots">···</span></div>
-        </aside>
-        <div class="app-main">
-          <div class="app-top"><span id="breadcrumb">Workspace / Resumen</span><div><span class="connection" id="connection"><i></i> Conectando</span><span id="identity"></span><button class="icon-button" id="refresh" title="Actualizar datos" aria-label="Actualizar datos">↻</button><button class="icon-button" id="account" data-action="change-password" title="Cambiar contraseña" aria-label="Cambiar contraseña" hidden>⚙</button><button class="icon-button" id="logout" title="Cerrar sesión" aria-label="Cerrar sesión" hidden>↪</button></div></div>
-          <div id="view" class="view-content"><div class="loading">Cargando datos…</div></div>
-        </div>
+  <main class="workspace-section" id="workspace">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegación del sistema">
+        <div class="side-brand"><span class="side-icon">i.</span><span>Inventario Studio <small>ORACLE FREESQL</small></span></div>
+        <div class="side-label">PRINCIPAL</div>
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">▦</span> Resumen <span class="nav-arrow">›</span></button>
+        <button class="nav-item" data-view="products"><span class="nav-icon">□</span> Productos <span class="nav-arrow">›</span></button>
+        <button class="nav-item" data-view="movements"><span class="nav-icon">⇄</span> Movimientos <span class="nav-arrow">›</span></button>
+        <button class="nav-item" data-view="sales"><span class="nav-icon">◫</span> Ventas y facturas <span class="nav-arrow">›</span></button>
+        <div class="side-label second">GESTIÓN</div>
+        <button class="nav-item" data-view="contacts"><span class="nav-icon">♧</span> Directorio <span class="nav-arrow">›</span></button>
+        <button class="nav-item" data-view="reports"><span class="nav-icon">◴</span> Reportes <span class="nav-arrow">›</span></button>
+        <button class="nav-item admin-only" data-view="users"><span class="nav-icon">◎</span> Usuarios y roles <span class="nav-arrow">›</span></button>
+        <div class="side-bottom"><span class="avatar">IS</span><span><strong>Inventario Studio</strong><small>Proyecto de bases de datos</small></span></div>
+      </aside>
+      <div class="app-main">
+        <div class="app-top"><span id="breadcrumb">Inventario / Resumen</span><div><span class="connection" id="connection"><i></i> Conectando</span><span id="identity"></span><button class="icon-button" id="refresh" title="Actualizar datos" aria-label="Actualizar datos">↻</button><button class="icon-button" id="account" data-action="change-password" title="Cambiar contraseña" aria-label="Cambiar contraseña" hidden>⚙</button><button class="icon-button" id="logout" title="Cerrar sesión" aria-label="Cerrar sesión" hidden>↪</button></div></div>
+        <div id="view" class="view-content"><div class="loading">Cargando datos…</div></div>
       </div>
-      <div class="under-app"><span>DISEÑADO PARA DECISIONES MÁS INTELIGENTES</span><span>↗</span></div>
-    </section>
-
-    <section class="insights" id="insights"><div class="insights-copy"><div class="section-kicker">DATOS QUE TE MUEVEN</div><h2>Menos intuición.<br><em>Más perspectiva.</em></h2><p>Cada registro se convierte en una señal útil. Consulta existencias, detecta faltantes y entiende qué aporta cada venta a tu utilidad.</p><a href="#workspace" class="text-link" id="reports-link">Ir a reportes <span>↗</span></a></div><div class="insights-art"><div class="art-header"><span>RENDIMIENTO / TIEMPO REAL</span><span>●</span></div><div class="art-bars"><i style="height:31%"></i><i style="height:45%"></i><i style="height:39%"></i><i style="height:59%"></i><i style="height:52%"></i><i style="height:76%"></i><i style="height:68%"></i><i style="height:91%"></i><i style="height:78%"></i><i style="height:100%"></i></div><div class="art-footer"><span>VISIBILIDAD COMPLETA</span><span>2026 →</span></div></div></section>
+    </div>
   </main>
-  <footer><span>© 2026 INVENTARIO STUDIO</span><span>SQL · ORACLE FREESQL</span><a href="#inicio">VOLVER ARRIBA ↑</a></footer>
   <div id="modal-root"></div><div id="toast" role="status" aria-live="polite"></div>
   <script src="/app.js"></script>
 </body>
