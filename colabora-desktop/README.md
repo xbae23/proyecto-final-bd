@@ -17,16 +17,17 @@ La aplicación usa **MongoDB Atlas**. El código Python se conecta con PyMongo. 
 | `attachments` | Metadatos de archivos alojados en GridFS. |
 
 Se crean índices únicos para usuarios y canales, y otros índices para filtrar publicaciones, tareas y avisos. La app restringe lectura y cambios a miembros de cada espacio; solo quien es propietario puede crear cuentas para otros miembros.
+Cada persona puede cambiar su contraseña desde el botón de configuración junto a su nombre.
 
 ## Conectar Atlas
 
 1. Crea un clúster gratuito M0 en tu cuenta de MongoDB Atlas.
 2. Crea un usuario de base de datos con permiso de lectura y escritura para `nexo_colabora`.
-3. Permite en *Network Access* la IP desde la que ejecutarás Nexo. Evita abrir acceso a todo Internet si puedes usar tu IP.
+3. Permite en *Network Access* la IP desde la que ejecutarás Nexo. Si necesitas cambiar de red sin actualizar la regla, permite `0.0.0.0/0` y usa una contraseña fuerte para el usuario de base de datos. La instancia de este proyecto usa esa opción.
 4. Copia la URI `mongodb+srv://...` desde **Connect → Drivers → Python**. Sustituye la contraseña por la de tu usuario de base de datos y codifica caracteres especiales de la contraseña como indica Atlas.
 5. Ejecuta `iniciar.bat`, pega la URI y crea el primer usuario de Nexo.
 
-La URI queda en `.env` local, excluido por `.gitignore`. Las contraseñas de usuarios de Nexo se almacenan como derivaciones, no en texto claro. Al crear el propietario se agregan datos de demostración.
+La URI queda en `.env` local, excluido por `.gitignore`. Las contraseñas de usuarios de Nexo se almacenan como derivaciones, no en texto claro. Al crear el propietario se agregan datos de demostración. La instancia preparada en Atlas tiene accesos de ejemplo en `.nexo-owner`, también excluido de GitHub.
 
 ## Consultas de práctica
 

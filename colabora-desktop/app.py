@@ -102,6 +102,8 @@ class Nexo(ctk.CTk):
         button=self.btn(box,"Conectar a MongoDB Atlas  →",connect,solid=True,width=440,height=42)
         button.pack(padx=30,pady=(0,10))
         self.label(wrap,"NEXO / PROYECTO FINAL DE BASES DE DATOS",10,"bold",color=self.colors["muted"]).pack(pady=32)
+        if os.getenv("MONGODB_URI"):
+            self.after(150,connect)
 
     def connection_error(self,status,button,error):
         button.configure(state="normal")
@@ -170,6 +172,7 @@ class Nexo(ctk.CTk):
         self.label(account,"◯",23).pack(side="left",padx=(10,7),pady=8)
         self.label(account,self.user["name"],11,"bold").pack(side="left")
         self.btn(account,"↪",self.logout,width=30,height=28).pack(side="right",padx=7)
+        self.btn(account,"⚙",self.change_password,width=30,height=28).pack(side="right",padx=2)
         main=ctk.CTkFrame(body,fg_color=c["bg"],corner_radius=0);main.pack(side="left",fill="both",expand=True)
         header=ctk.CTkFrame(main,fg_color="transparent",height=105);header.pack(fill="x",padx=30,pady=(24,8))
         self.label(header,"WORKSPACE  /  "+(self.channel["name"].upper() if self.channel else "TODOS LOS CANALES"),10,"bold",color=c["muted"]).pack(anchor="w")
@@ -188,6 +191,14 @@ class Nexo(ctk.CTk):
         self.set_theme("light" if self.theme=="dark" else "dark");self.render_app()
 
     def logout(self):self.user=None;self.show_auth(False)
+    def change_password(self):
+        def submit(v):
+            if v["new"]!=v["confirm"]:raise ValueError("Las nuevas contraseñas no coinciden")
+            self.store.change_password(self.user["_id"],v["current"],v["new"])
+            messagebox.showinfo("Contraseña","Tu contraseña se actualizó correctamente")
+        self.dialog("Cambiar contraseña",[("current","CONTRASEÑA ACTUAL","Contraseña actual",True),
+            ("new","NUEVA CONTRASEÑA","Mínimo 10 caracteres",True),
+            ("confirm","CONFIRMAR","Repite la nueva contraseña",True)],submit,"Actualizar contraseña")
     def change_workspace(self,workspace):self.workspace=workspace;self.channel=None;self.tab="updates";self.render_app()
     def change_channel(self,channel):self.channel=channel;self.tab="updates";self.render_app()
     def change_tab(self,tab):self.tab=tab;self.render_app()

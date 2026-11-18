@@ -1,4 +1,6 @@
 **/.env
+**/.inventario-access
+**/.nexo-owner
 **/.venv/
 **/__pycache__/
 **/*.pyc

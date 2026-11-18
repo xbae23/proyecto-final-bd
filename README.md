@@ -31,7 +31,9 @@ El esquema está en `inventario-web/schema.oracle.sql`; consultas para demostrar
 
 Aplicación Python con espacios, canales, publicaciones generales o dirigidas a una persona, preguntas, hitos, comentarios, reacciones, tablero de tareas, miembros, notificaciones y biblioteca de archivos. Las fotos y documentos se guardan en GridFS, con límite de 5 MB por archivo para cuidar el nivel gratuito de Atlas.
 
-**Inicio:** en `colabora-desktop`, ejecuta `pip install -r requirements.txt` y después `iniciar.bat`. La primera pantalla pide la cadena de conexión de MongoDB Atlas. Al conectar se guarda solo en `.env` local. Crea el usuario propietario de Nexo y la app generará un espacio con cuatro canales, tres publicaciones y tres tareas de ejemplo. Para que otros participen, crea sus usuarios desde **Personas**; todos deben usar la misma base Atlas y ejecutar su propia copia de la app.
+**Inicio:** en `colabora-desktop`, ejecuta `pip install -r requirements.txt` y después `iniciar.bat`. La primera pantalla pide la cadena de conexión de MongoDB Atlas. Al conectar se guarda solo en `.env` local; los siguientes inicios conectan automáticamente y muestran el acceso a Nexo. Crea el usuario propietario de Nexo y la app generará un espacio con cuatro canales, tres publicaciones y tres tareas de ejemplo. Para que otros participen, crea sus usuarios desde **Personas**; todos deben usar la misma base Atlas y ejecutar su propia copia de la app. Cada persona puede cambiar su contraseña desde el control junto a su nombre.
+
+La instancia de Atlas de este proyecto tiene cuatro usuarios de demostración, once publicaciones, siete tareas y un adjunto. Sus accesos están únicamente en el archivo local `colabora-desktop/.nexo-owner`, excluido de GitHub.
 
 El modelo y las consultas de agregación están documentados en `colabora-desktop/README.md`.
 

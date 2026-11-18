@@ -89,6 +89,15 @@ class Store:
             raise ValueError("Usuario o contraseña incorrectos")
         return public(user)
 
+    def change_password(self,user_id,current_password,new_password):
+        user=self.db.users.find_one({"_id":ObjectId(user_id)})
+        if not user or not hmac.compare_digest(user["password_hash"],digest(current_password,user["salt"])):
+            raise ValueError("La contraseña actual es incorrecta")
+        if len(new_password)<10:
+            raise ValueError("La nueva contraseña necesita al menos 10 caracteres")
+        salt=secrets.token_hex(16)
+        self.db.users.update_one({"_id":user["_id"]},{"$set":{"salt":salt,"password_hash":digest(new_password,salt)}})
+
     def invite_member(self,actor_id,workspace_id,name,username,password,role="member"):
         self._require_role(actor_id,workspace_id,("owner",))
         user=self._create_user(name,username,password)
