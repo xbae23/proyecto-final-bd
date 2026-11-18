@@ -198,13 +198,17 @@ class Store:
         return [{**public(x),"uploader":users.get(x["uploader_id"],"Usuario")} for x in docs]
 
     def save_attachment(self,user_id,workspace_id,attachment_id,destination):
+        _, data = self.read_attachment(user_id,workspace_id,attachment_id)
+        with open(destination,"wb") as out:
+            out.write(data)
+
+    def read_attachment(self,user_id,workspace_id,attachment_id):
         self._require_member(user_id,workspace_id)
         doc=self.db.attachments.find_one({"_id":ObjectId(attachment_id),"workspace_id":ObjectId(workspace_id)})
         if not doc: raise ValueError("Archivo no encontrado")
         if doc.get("recipient_id") and ObjectId(user_id) not in (doc["recipient_id"],doc["uploader_id"]):
             raise PermissionError("No tienes acceso a este archivo")
-        with open(destination,"wb") as out:
-            out.write(self.fs.get(doc["grid_id"]).read())
+        return public(doc), self.fs.get(doc["grid_id"]).read()
 
     def comments(self,user_id,workspace_id,post_id):
         self._visible_post(user_id,workspace_id,post_id)

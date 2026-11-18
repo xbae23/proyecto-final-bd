@@ -5,11 +5,13 @@ import os
 import secrets
 import threading
 import tkinter as tk
+from io import BytesIO
 from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox
 
 import customtkinter as ctk
+from PIL import Image
 
 from store import Store
 
@@ -336,21 +338,32 @@ class Nexo(ctk.CTk):
         self.btn(win,"Publicar actualización  →",publish,solid=True,width=550,height=42).pack(padx=24,pady=20)
 
     def open_post(self,post):
-        win=ctk.CTkToplevel(self);win.title(post["title"]);win.geometry("620x610");win.transient(self);win.configure(fg_color=self.colors["bg"])
-        self.label(win,"#"+post["channel"]+"  /  "+post["kind"].upper(),10,"bold",color=self.colors["muted"]).pack(anchor="w",padx=25,pady=(25,10))
-        self.label(win,post["title"],25,"bold",wraplength=560,justify="left").pack(anchor="w",padx=25)
-        self.label(win,post["author"]+" · "+short_date(post["created_at"]),11,color=self.colors["muted"]).pack(anchor="w",padx=25,pady=(8,22))
-        text=ctk.CTkTextbox(win,width=565,height=185,fg_color=self.colors["surface"],border_width=1,border_color=self.colors["border"]);text.pack(padx=25);text.insert("1.0",post["body"]);text.configure(state="disabled")
+        win=ctk.CTkToplevel(self);win.title(post["title"]);win.geometry("620x710");win.transient(self);win.configure(fg_color=self.colors["bg"])
+        inner=ctk.CTkScrollableFrame(win,fg_color="transparent");inner.pack(fill="both",expand=True,padx=10,pady=10)
+        self.label(inner,"#"+post["channel"]+"  /  "+post["kind"].upper(),10,"bold",color=self.colors["muted"]).pack(anchor="w",padx=15,pady=(15,10))
+        self.label(inner,post["title"],25,"bold",wraplength=530,justify="left").pack(anchor="w",padx=15)
+        self.label(inner,post["author"]+" · "+short_date(post["created_at"]),11,color=self.colors["muted"]).pack(anchor="w",padx=15,pady=(8,22))
+        text=ctk.CTkTextbox(inner,width=535,height=185,fg_color=self.colors["surface"],border_width=1,border_color=self.colors["border"]);text.pack(padx=15);text.insert("1.0",post["body"]);text.configure(state="disabled")
         attachments=self.store.attachments(self.user["_id"],self.workspace["_id"])
         attached=[x for x in attachments if x["_id"] in post.get("attachments",[])]
-        for f in attached:self.btn(win,"⌁  "+f["name"]+"   ↓",lambda x=f:self.download_file(x),width=565,anchor="w").pack(padx=25,pady=(9,0))
-        self.btn(win,"◌  Ver comentarios",lambda:self.open_comments(post),width=565).pack(padx=25,pady=(16,0))
+        for f in attached:
+            if f.get("mime","").startswith("image/"):
+                try:
+                    _, raw=self.store.read_attachment(self.user["_id"],self.workspace["_id"],f["_id"])
+                    preview=Image.open(BytesIO(raw));preview.thumbnail((560,180))
+                    image=ctk.CTkImage(light_image=preview,dark_image=preview,size=preview.size)
+                    label=ctk.CTkLabel(inner,text="",image=image)
+                    label.image=image
+                    label.pack(anchor="w",padx=15,pady=(10,0))
+                except Exception:pass
+        for f in attached:self.btn(inner,"⌁  "+f["name"]+"   ↓",lambda x=f:self.download_file(x),width=535,anchor="w").pack(padx=15,pady=(9,0))
+        self.btn(inner,"◌  Ver comentarios",lambda:self.open_comments(post),width=535).pack(padx=15,pady=(16,0))
         if post["author_id"]==self.user["_id"]:
             def delete():
                 if messagebox.askyesno("Eliminar publicación","¿Eliminar esta actualización?",parent=win):
                     self.store.delete_post(self.user["_id"],self.workspace["_id"],post["_id"])
                     win.destroy();self.render_content()
-            self.btn(win,"Eliminar publicación",delete,width=565).pack(padx=25,pady=(9,0))
+            self.btn(inner,"Eliminar publicación",delete,width=535).pack(padx=15,pady=(9,0))
 
     def open_comments(self,post):
         win=ctk.CTkToplevel(self);win.title("Comentarios");win.geometry("510x520");win.transient(self);win.configure(fg_color=self.colors["bg"])
