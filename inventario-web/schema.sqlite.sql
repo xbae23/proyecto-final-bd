@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS inv_categories (id TEXT PRIMARY KEY, name TEXT NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS inv_suppliers (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT);
+CREATE TABLE IF NOT EXISTS inv_customers (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT);
+CREATE TABLE IF NOT EXISTS inv_products (id TEXT PRIMARY KEY, sku TEXT NOT NULL UNIQUE, name TEXT NOT NULL, category_id TEXT REFERENCES inv_categories(id), supplier_id TEXT REFERENCES inv_suppliers(id), cost REAL NOT NULL CHECK (cost>=0), price REAL NOT NULL CHECK (price>0), stock INTEGER NOT NULL DEFAULT 0 CHECK (stock>=0), min_stock INTEGER NOT NULL DEFAULT 10, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS inv_movements (id TEXT PRIMARY KEY, product_id TEXT NOT NULL REFERENCES inv_products(id), kind TEXT NOT NULL, quantity INTEGER NOT NULL, note TEXT, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS inv_sales (id TEXT PRIMARY KEY, invoice TEXT NOT NULL UNIQUE, customer_id TEXT NOT NULL REFERENCES inv_customers(id), total REAL NOT NULL, gain REAL NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS inv_sale_items (id TEXT PRIMARY KEY, sale_id TEXT NOT NULL REFERENCES inv_sales(id), product_id TEXT NOT NULL REFERENCES inv_products(id), quantity INTEGER NOT NULL CHECK (quantity>0), unit_price REAL NOT NULL, unit_cost REAL NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_inv_movements_product ON inv_movements(product_id);
+CREATE INDEX IF NOT EXISTS idx_inv_items_sale ON inv_sale_items(sale_id);

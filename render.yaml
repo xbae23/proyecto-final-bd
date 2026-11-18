@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: inventario-studio
+    runtime: python
+    plan: free
+    rootDir: inventario-web
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.18
+      - key: INVENTARIO_HOST
+        value: 0.0.0.0
+      - key: FREESQL_USER
+        sync: false
+      - key: FREESQL_PASSWORD
+        sync: false
+      - key: FREESQL_DSN
+        sync: false
+      - key: INVENTARIO_ADMIN_USER
+        sync: false
+      - key: INVENTARIO_ADMIN_PASSWORD
+        sync: false

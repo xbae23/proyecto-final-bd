@@ -1,0 +1,2 @@
+pymongo[srv]>=4.10,<5
+customtkinter>=5.2,<6
