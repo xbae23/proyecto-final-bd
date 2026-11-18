@@ -9,6 +9,12 @@ Este directorio contiene dos aplicaciones completas con modelos de datos distint
 
 Los datos de las dos apps no se mezclan. Las credenciales van en archivos `.env` locales y nunca en GitHub.
 
+## Entrega conectada
+
+- **Inventario Studio en línea:** https://inventario-studio-oracle.onrender.com — servicio gratuito de Render enlazado a este repositorio y conectado al esquema Oracle FreeSQL de la cuenta del proyecto. El usuario y la contraseña de acceso están en el archivo local `inventario-web/.inventario-access` (excluido de GitHub).
+- **Nexo de escritorio:** ejecuta `colabora-desktop/iniciar.bat` en este equipo. Su archivo local `.env` ya apunta al clúster gratuito `NexoFree` de MongoDB Atlas. Los cuatro usuarios de demostración y sus accesos están en `colabora-desktop/.nexo-owner` (excluido de GitHub).
+- En el plan gratuito de Render, la primera visita tras un periodo de inactividad puede tardar aproximadamente un minuto mientras el servicio despierta.
+
 ## Inventario Studio
 
 Funciones: productos, categorías, proveedores, clientes, entradas y salidas, ventas con comprobante interno imprimible, reportes de existencias, ingresos y ganancia bruta. Cada venta crea partidas y movimientos, y actualiza existencias en una transacción. Incluye 16 productos, 4 clientes, 3 proveedores, 5 categorías y 5 ventas de ejemplo al crear un esquema vacío. El comprobante sirve para practicar relaciones y ventas; no sustituye una factura fiscal CFDI.
@@ -23,7 +29,7 @@ FREESQL_DSN=host:puerto/servicio
 
 Ejecuta `iniciar.bat` y abre `http://127.0.0.1:8050`. Sin `FREESQL_DSN`, la app usa una base SQLite local **solo para practicar y verificar**; la interfaz indica este modo. Para presentar el producto conectado, configura Oracle y comprueba que la interfaz diga `Oracle FreeSQL`.
 
-**Despliegue:** `render.yaml` define un servicio web gratuito con Python. GitHub Pages solo publica archivos estáticos y no ejecuta el servidor que conecta de forma segura con Oracle; por eso el código se guarda en GitHub y la URL web pública se sirve desde Render. En Render configura las cinco variables secretas del manifiesto. El servicio exige usuario y contraseña de acceso cuando se publica fuera de `localhost`.
+**Despliegue:** `render.yaml` define un servicio web gratuito con Python. GitHub Pages solo publica archivos estáticos y no ejecuta el servidor que conecta de forma segura con Oracle; por eso el código se guarda en GitHub y la URL web pública se sirve desde Render. El servicio publicado tiene las variables de conexión configuradas de forma privada y exige usuario y contraseña de acceso.
 
 El esquema está en `inventario-web/schema.oracle.sql`; consultas para demostrar SQL en `inventario-web/consultas.oracle.sql`.
 
