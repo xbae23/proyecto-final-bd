@@ -11,7 +11,7 @@ Los datos de las dos apps no se mezclan. Las credenciales van en archivos `.env`
 
 ## Inventario Studio
 
-Funciones: productos, categorías, proveedores, clientes, entradas y salidas, ventas con factura, reportes de existencias, ingresos y ganancia bruta. Cada venta crea partidas y movimientos, y actualiza existencias en una transacción. Incluye 16 productos, 4 clientes, 3 proveedores, 5 categorías y 5 ventas de ejemplo al crear un esquema vacío.
+Funciones: productos, categorías, proveedores, clientes, entradas y salidas, ventas con comprobante interno imprimible, reportes de existencias, ingresos y ganancia bruta. Cada venta crea partidas y movimientos, y actualiza existencias en una transacción. Incluye 16 productos, 4 clientes, 3 proveedores, 5 categorías y 5 ventas de ejemplo al crear un esquema vacío. El comprobante sirve para practicar relaciones y ventas; no sustituye una factura fiscal CFDI.
 
 **Inicio local:** en `inventario-web`, instala Python 3.13 y ejecuta `pip install -r requirements.txt`. Copia `.env.example` a `.env` y escribe la conexión de tu esquema Oracle FreeSQL:
 
