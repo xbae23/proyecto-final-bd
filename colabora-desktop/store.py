@@ -100,6 +100,7 @@ class Store:
 
     def invite_member(self,actor_id,workspace_id,name,username,password,role="member"):
         self._require_role(actor_id,workspace_id,("owner",))
+        if role != "member": raise ValueError("Los nuevos integrantes comienzan como usuarios normales")
         user=self._create_user(name,username,password)
         self.db.memberships.insert_one({"workspace_id":ObjectId(workspace_id),"user_id":user["_id"],"role":role,"joined_at":now()})
         return public(user)
@@ -113,11 +114,16 @@ class Store:
         membership=self._require_member(user_id,workspace_id)
         if membership["role"] not in roles: raise PermissionError("No tienes permisos para esta acción")
 
+    def workspace_role(self,user_id,workspace_id):
+        return self._require_member(user_id,workspace_id)["role"]
+
     def workspaces(self,user_id):
         ids=[m["workspace_id"] for m in self.db.memberships.find({"user_id":ObjectId(user_id)})]
         return [public(x) for x in self.db.workspaces.find({"_id":{"$in":ids}}).sort("name",1)]
 
     def create_workspace(self,user_id,name):
+        if not self.db.memberships.find_one({"user_id":ObjectId(user_id),"role":"owner"}):
+            raise PermissionError("Solo administradores pueden crear espacios")
         name=name.strip()
         if len(name)<3: raise ValueError("El nombre necesita al menos 3 caracteres")
         slug=(name.lower().replace(" ","-")+"-"+secrets.token_hex(2))
@@ -131,7 +137,7 @@ class Store:
         return [public(x) for x in self.db.channels.find({"workspace_id":ObjectId(workspace_id)}).sort("name",1)]
 
     def create_channel(self,user_id,workspace_id,name,description=""):
-        self._require_member(user_id,workspace_id)
+        self._require_role(user_id,workspace_id,("owner",))
         name=name.strip().lstrip("#")
         if len(name)<2: raise ValueError("El canal necesita al menos 2 caracteres")
         oid=self.db.channels.insert_one({"workspace_id":ObjectId(workspace_id),"name":name,"description":description.strip(),"created_at":now()}).inserted_id
@@ -160,6 +166,8 @@ class Store:
 
     def create_post(self,user_id,workspace_id,channel_id,title,body,kind="update",attachment_paths=None,recipient_id=None):
         self._require_member(user_id,workspace_id)
+        if kind in ("announcement","milestone"):
+            self._require_role(user_id,workspace_id,("owner",))
         if recipient_id: self._require_member(recipient_id,workspace_id)
         if not self.db.channels.find_one({"_id":ObjectId(channel_id),"workspace_id":ObjectId(workspace_id)}):
             raise ValueError("Canal no válido")
@@ -246,7 +254,7 @@ class Store:
         return [{**public(x),"assignee":users.get(x.get("assignee_id"),"Sin asignar")} for x in docs]
 
     def create_task(self,user_id,workspace_id,channel_id,title,description,assignee_id=None,priority="medium"):
-        self._require_member(user_id,workspace_id)
+        self._require_role(user_id,workspace_id,("owner",))
         if not title.strip(): raise ValueError("Escribe un título")
         if assignee_id: self._require_member(assignee_id,workspace_id)
         doc={"workspace_id":ObjectId(workspace_id),"channel_id":ObjectId(channel_id),"title":title.strip(),"description":description.strip(),"status":"todo","priority":priority if priority in ("low","medium","high") else "medium","assignee_id":ObjectId(assignee_id) if assignee_id else None,"author_id":ObjectId(user_id),"created_at":now(),"updated_at":now()}
@@ -256,9 +264,13 @@ class Store:
         return str(oid)
 
     def set_task_status(self,user_id,workspace_id,task_id,status):
-        self._require_member(user_id,workspace_id)
+        role=self.workspace_role(user_id,workspace_id)
         if status not in ("todo","doing","done"): raise ValueError("Estado inválido")
-        self.db.tasks.update_one({"_id":ObjectId(task_id),"workspace_id":ObjectId(workspace_id)},{"$set":{"status":status,"updated_at":now()}})
+        task=self.db.tasks.find_one({"_id":ObjectId(task_id),"workspace_id":ObjectId(workspace_id)})
+        if not task: raise ValueError("Tarea no encontrada")
+        if role!="owner" and task.get("assignee_id")!=ObjectId(user_id):
+            raise PermissionError("Solo puedes mover tareas asignadas a ti")
+        self.db.tasks.update_one({"_id":task["_id"]},{"$set":{"status":status,"updated_at":now()}})
 
     def notifications(self,user_id,workspace_id):
         self._require_member(user_id,workspace_id)

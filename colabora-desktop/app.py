@@ -147,6 +147,7 @@ class Nexo(ctk.CTk):
 
     def render_app(self):
         self.clear();c=self.colors
+        self.role=self.store.workspace_role(self.user["_id"],self.workspace["_id"])
         top=ctk.CTkFrame(self,fg_color=c["sidebar"],height=59,corner_radius=0)
         top.pack(fill="x");top.pack_propagate(False)
         self.label(top,"◈",23,"bold").pack(side="left",padx=(22,8))
@@ -161,16 +162,17 @@ class Nexo(ctk.CTk):
         self.label(sidebar,"ESPACIOS",10,"bold",color=c["muted"]).pack(anchor="w",padx=19,pady=(25,9))
         for ws in spaces:
             self.side_button(sidebar,"▣   "+ws["name"],lambda x=ws:self.change_workspace(x),ws["_id"]==self.workspace["_id"])
-        self.side_button(sidebar,"+   Nuevo espacio",self.create_workspace)
+        if self.role=="owner":self.side_button(sidebar,"+   Nuevo espacio",self.create_workspace)
         self.label(sidebar,"CANALES",10,"bold",color=c["muted"]).pack(anchor="w",padx=19,pady=(30,9))
         self.side_button(sidebar,"⌗   Todos",lambda:self.change_channel(None),self.channel is None)
         for ch in self.store.channels(self.user["_id"],self.workspace["_id"]):
             self.side_button(sidebar,"#   "+ch["name"],lambda x=ch:self.change_channel(x),self.channel and ch["_id"]==self.channel["_id"])
-        self.side_button(sidebar,"+   Crear canal",self.create_channel)
+        if self.role=="owner":self.side_button(sidebar,"+   Crear canal",self.create_channel)
         spacer=ctk.CTkFrame(sidebar,fg_color="transparent");spacer.pack(fill="both",expand=True)
         account=self.frame(sidebar,fg=c["surface2"]);account.pack(fill="x",padx=10,pady=12)
         self.label(account,"◯",23).pack(side="left",padx=(10,7),pady=8)
         self.label(account,self.user["name"],11,"bold").pack(side="left")
+        self.label(account,"ADMIN" if self.role=="owner" else "USUARIO",8,"bold",color=c["muted"]).pack(side="left",padx=4)
         self.btn(account,"↪",self.logout,width=30,height=28).pack(side="right",padx=7)
         self.btn(account,"⚙",self.change_password,width=30,height=28).pack(side="right",padx=2)
         main=ctk.CTkFrame(body,fg_color=c["bg"],corner_radius=0);main.pack(side="left",fill="both",expand=True)
@@ -243,7 +245,7 @@ class Nexo(ctk.CTk):
         c=self.colors
         bar=ctk.CTkFrame(self.content,fg_color="transparent");bar.pack(fill="x",pady=(0,14))
         self.label(bar,"Tareas del equipo",17,"bold").pack(side="left")
-        self.btn(bar,"+  Nueva tarea",self.create_task,solid=True,width=130).pack(side="right")
+        if self.role=="owner":self.btn(bar,"+  Nueva tarea",self.create_task,solid=True,width=130).pack(side="right")
         board=ctk.CTkFrame(self.content,fg_color="transparent");board.pack(fill="both",expand=True)
         tasks=self.store.tasks(self.user["_id"],self.workspace["_id"])
         for col,(status,title) in enumerate([("todo","Por hacer"),("doing","En curso"),("done","Terminado")]):
@@ -257,7 +259,8 @@ class Nexo(ctk.CTk):
                 self.label(card,t["title"],13,"bold",wraplength=245,justify="left").pack(anchor="w",padx=13)
                 if t.get("description"):self.label(card,t["description"][:130],11,color=c["muted"],wraplength=245,justify="left").pack(anchor="w",padx=13,pady=(6,12))
                 next_status={"todo":"doing","doing":"done","done":"todo"}[status]
-                self.btn(card,"Mover → "+{"todo":"Por hacer","doing":"En curso","done":"Terminado"}[next_status],lambda x=t,s=next_status:self.move_task(x,s),width=140,height=26).pack(anchor="w",padx=13,pady=(0,12))
+                if self.role=="owner" or t.get("assignee_id")==self.user["_id"]:
+                    self.btn(card,"Mover → "+{"todo":"Por hacer","doing":"En curso","done":"Terminado"}[next_status],lambda x=t,s=next_status:self.move_task(x,s),width=140,height=26).pack(anchor="w",padx=13,pady=(0,12))
 
     def render_files(self):
         c=self.colors
@@ -279,7 +282,7 @@ class Nexo(ctk.CTk):
         c=self.colors
         bar=ctk.CTkFrame(self.content,fg_color="transparent");bar.pack(fill="x",pady=(0,14))
         self.label(bar,"Personas del espacio",17,"bold").pack(side="left")
-        self.btn(bar,"+  Agregar persona",self.add_member,solid=True,width=150).pack(side="right")
+        if self.role=="owner":self.btn(bar,"+  Agregar persona",self.add_member,solid=True,width=150).pack(side="right")
         listbox=ctk.CTkScrollableFrame(self.content,fg_color="transparent");listbox.pack(fill="both",expand=True)
         for m in self.store.members(self.user["_id"],self.workspace["_id"]):
             row=self.frame(listbox);row.pack(fill="x",pady=(0,8))
@@ -326,7 +329,7 @@ class Nexo(ctk.CTk):
         choice=ctk.CTkOptionMenu(win,values=[c["name"] for c in channels],width=550,fg_color=self.colors["surface2"],button_color=self.colors["hover"],text_color=self.colors["text"])
         choice.pack(padx=24,pady=(7,13));choice.set(self.channel["name"] if self.channel else channels[0]["name"])
         self.label(win,"TIPO",10,"bold",color=self.colors["muted"]).pack(anchor="w",padx=24)
-        kind=ctk.CTkOptionMenu(win,values=["Actualización","Anuncio","Hito","Pregunta"],width=550,fg_color=self.colors["surface2"],button_color=self.colors["hover"],text_color=self.colors["text"])
+        kind=ctk.CTkOptionMenu(win,values=["Actualización","Anuncio","Hito","Pregunta"] if self.role=="owner" else ["Actualización","Pregunta"],width=550,fg_color=self.colors["surface2"],button_color=self.colors["hover"],text_color=self.colors["text"])
         kind.pack(padx=24,pady=(7,13))
         self.label(win,"DESTINATARIO",10,"bold",color=self.colors["muted"]).pack(anchor="w",padx=24)
         target=ctk.CTkOptionMenu(win,values=["Todo el canal"]+["@"+m["username"] for m in members],width=550,fg_color=self.colors["surface2"],button_color=self.colors["hover"],text_color=self.colors["text"])
@@ -369,7 +372,7 @@ class Nexo(ctk.CTk):
                 except Exception:pass
         for f in attached:self.btn(inner,"⌁  "+f["name"]+"   ↓",lambda x=f:self.download_file(x),width=535,anchor="w").pack(padx=15,pady=(9,0))
         self.btn(inner,"◌  Ver comentarios",lambda:self.open_comments(post),width=535).pack(padx=15,pady=(16,0))
-        if post["author_id"]==self.user["_id"]:
+        if post["author_id"]==self.user["_id"] or self.role=="owner":
             def delete():
                 if messagebox.askyesno("Eliminar publicación","¿Eliminar esta actualización?",parent=win):
                     self.store.delete_post(self.user["_id"],self.workspace["_id"],post["_id"])

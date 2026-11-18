@@ -1,0 +1,25 @@
+[hidden]{display:none!important}
+.login-wrap{min-height:530px;display:grid;place-items:center;background:radial-gradient(circle at 50% 15%,#e5f2e9,#fff 60%);border-radius:12px}
+.login-card{width:min(410px,100%);background:#fff;border:1px solid #e3e9e3;border-radius:17px;padding:32px;box-shadow:0 24px 60px #233c2d17}
+.login-card h3{font:800 29px/1.15 Manrope,sans-serif;letter-spacing:-.06em;margin:14px 0 9px}
+.login-card p{color:#7f8b82;font-size:12px;line-height:1.6;margin:0 0 24px}
+.login-card form,.role-form{display:grid;gap:15px}
+.login-card label,.role-form label{display:grid;gap:7px;color:#66746b;font-size:10px;font-weight:800;letter-spacing:.1em}
+.login-card input,.role-form input,.role-form select{width:100%;height:42px;border:1px solid #dce5dd;border-radius:8px;background:#fbfcfb;color:#17211a;padding:0 12px;font:500 13px 'DM Sans',sans-serif;letter-spacing:normal;outline:none}
+.login-card input:focus,.role-form input:focus,.role-form select:focus{border-color:#7fb18d;box-shadow:0 0 0 3px #cce5d333}
+.login-card button{height:44px;margin-top:8px;justify-content:center}
+.role-form p{margin:0;color:#24342a;font-size:14px}
+#identity{color:#52675a;font-size:10px;font-weight:800;white-space:nowrap}
+.role-user .nav-item[data-view="reports"],.role-user .nav-item[data-view="users"],
+.role-user #view[data-view="overview"] .stat-card:nth-child(3),
+.role-user #view[data-view="products"] [data-action="new-product"],
+.role-user #view[data-view="products"] .data-table th:nth-child(4),
+.role-user #view[data-view="products"] .data-table td:nth-child(4),
+.role-user #view[data-view="products"] .data-table th:nth-child(7),
+.role-user #view[data-view="products"] .data-table td:nth-child(7),
+.role-user #view[data-view="movements"] [data-action="new-movement"],
+.role-user #view[data-view="sales"] .data-table th:nth-child(5),
+.role-user #view[data-view="sales"] .data-table td:nth-child(5),
+.role-user #view[data-view="contacts"] [data-action="new-supplier"],
+.role-user #view[data-view="contacts"] [data-action="new-category"]{display:none!important}
+@media(max-width:650px){#identity{font-size:9px}.login-card{padding:23px}.login-wrap{min-height:480px}}

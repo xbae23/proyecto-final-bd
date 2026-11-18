@@ -7,3 +7,4 @@ CREATE TABLE IF NOT EXISTS inv_sales (id TEXT PRIMARY KEY, invoice TEXT NOT NULL
 CREATE TABLE IF NOT EXISTS inv_sale_items (id TEXT PRIMARY KEY, sale_id TEXT NOT NULL REFERENCES inv_sales(id), product_id TEXT NOT NULL REFERENCES inv_products(id), quantity INTEGER NOT NULL CHECK (quantity>0), unit_price REAL NOT NULL, unit_cost REAL NOT NULL);
 CREATE INDEX IF NOT EXISTS idx_inv_movements_product ON inv_movements(product_id);
 CREATE INDEX IF NOT EXISTS idx_inv_items_sale ON inv_sale_items(sale_id);
+CREATE TABLE IF NOT EXISTS inv_users (id TEXT PRIMARY KEY, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK (role IN ('admin','usuario')), active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL);

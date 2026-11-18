@@ -7,3 +7,4 @@ CREATE TABLE inv_sales (id VARCHAR2(12) PRIMARY KEY, invoice VARCHAR2(30) NOT NU
 CREATE TABLE inv_sale_items (id VARCHAR2(12) PRIMARY KEY, sale_id VARCHAR2(12) NOT NULL REFERENCES inv_sales(id), product_id VARCHAR2(12) NOT NULL REFERENCES inv_products(id), quantity NUMBER(10) NOT NULL CHECK (quantity>0), unit_price NUMBER(12,2) NOT NULL, unit_cost NUMBER(12,2) NOT NULL);
 CREATE INDEX idx_inv_movements_product ON inv_movements(product_id);
 CREATE INDEX idx_inv_items_sale ON inv_sale_items(sale_id);
+CREATE TABLE inv_users (id VARCHAR2(12) PRIMARY KEY, username VARCHAR2(60) NOT NULL UNIQUE, password_hash VARCHAR2(180) NOT NULL, role VARCHAR2(20) NOT NULL CHECK (role IN ('admin','usuario')), active NUMBER(1) DEFAULT 1 NOT NULL, created_at VARCHAR2(40) NOT NULL);

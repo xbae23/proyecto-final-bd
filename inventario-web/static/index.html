@@ -7,6 +7,7 @@
   <meta name="description" content="Inventario Studio: sistema de inventario, ventas y reportes conectado a Oracle FreeSQL." />
   <title>Inventario Studio — Control en calma</title>
   <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/roles.css" />
 </head>
 <body>
   <header class="topbar">
@@ -40,10 +41,11 @@
           <div class="side-label second">GESTIÓN</div>
           <button class="nav-item" data-view="contacts"><span class="nav-icon">♧</span> Directorio <span class="nav-arrow">›</span></button>
           <button class="nav-item" data-view="reports"><span class="nav-icon">◴</span> Reportes <span class="nav-arrow">›</span></button>
+          <button class="nav-item admin-only" data-view="users"><span class="nav-icon">◎</span> Usuarios y roles <span class="nav-arrow">›</span></button>
           <div class="side-bottom"><span class="avatar">IS</span><span><strong>Inventario Studio</strong><small>Proyecto de bases de datos</small></span><span class="side-dots">···</span></div>
         </aside>
         <div class="app-main">
-          <div class="app-top"><span id="breadcrumb">Workspace / Resumen</span><div><span class="connection" id="connection"><i></i> Conectando</span><button class="icon-button" id="refresh" title="Actualizar datos" aria-label="Actualizar datos">↻</button></div></div>
+          <div class="app-top"><span id="breadcrumb">Workspace / Resumen</span><div><span class="connection" id="connection"><i></i> Conectando</span><span id="identity"></span><button class="icon-button" id="refresh" title="Actualizar datos" aria-label="Actualizar datos">↻</button><button class="icon-button" id="account" data-action="change-password" title="Cambiar contraseña" aria-label="Cambiar contraseña" hidden>⚙</button><button class="icon-button" id="logout" title="Cerrar sesión" aria-label="Cerrar sesión" hidden>↪</button></div></div>
           <div id="view" class="view-content"><div class="loading">Cargando datos…</div></div>
         </div>
       </div>

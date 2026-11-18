@@ -5,7 +5,11 @@ personal de Oracle FreeSQL mediante python-oracledb (modo thin).
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import os
+import re
+import secrets
 import sqlite3
 import uuid
 from contextlib import contextmanager
@@ -22,6 +26,21 @@ def stamp():
 
 def ident():
     return uuid.uuid4().hex[:12]
+
+
+def password_hash(password, salt=None):
+    salt = salt or secrets.token_hex(16)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), 260_000)
+    return f"pbkdf2_sha256${salt}${digest.hex()}"
+
+
+def verify_password(password, stored):
+    try:
+        algorithm, salt, _ = stored.split("$", 2)
+        if algorithm != "pbkdf2_sha256": return False
+        return hmac.compare_digest(password_hash(password, salt), stored)
+    except (ValueError, TypeError):
+        return False
 
 
 class Store:
@@ -84,6 +103,78 @@ class Store:
             count = self.one(conn, "SELECT COUNT(*) AS n FROM inv_categories")["n"]
             if count == 0:
                 self.seed(conn)
+            self.ensure_admin(conn)
+
+    def ensure_admin(self, conn):
+        username = os.getenv("INVENTARIO_ADMIN_USER", "").strip().lower()
+        password = os.getenv("INVENTARIO_ADMIN_PASSWORD", "")
+        if username and password and not self.one(conn, "SELECT id FROM inv_users WHERE username=:username", {"username":username}):
+            self.execute(conn, """INSERT INTO inv_users (id,username,password_hash,role,active,created_at)
+                VALUES (:id,:username,:password_hash,'admin',1,:created_at)""",
+                {"id":ident(),"username":username,"password_hash":password_hash(password),"created_at":stamp()})
+
+    def login(self, username, password):
+        with self.connection() as conn:
+            user = self.one(conn,"SELECT * FROM inv_users WHERE username=:username",{"username":str(username).strip().lower()})
+            if not user or not user["active"] or not verify_password(str(password),user["password_hash"]):
+                raise ValueError("Usuario o contraseña incorrectos")
+            return {"id":user["id"],"username":user["username"],"role":user["role"]}
+
+    def user_by_id(self, user_id):
+        with self.connection() as conn:
+            user = self.one(conn,"SELECT * FROM inv_users WHERE id=:id",{"id":user_id})
+            return user if user and user["active"] else None
+
+    def users(self):
+        with self.connection() as conn:
+            return self.rows(conn,"SELECT id,username,role,active,created_at FROM inv_users ORDER BY username")
+
+    def create_user(self, data):
+        username = str(data.get("username", "")).strip().lower()
+        password = str(data.get("password", ""))
+        role = str(data.get("role", "usuario"))
+        if not re.fullmatch(r"[a-z0-9_.-]{3,60}",username):
+            raise ValueError("Usuario: 3 a 60 letras minúsculas, números, punto, guion o guion bajo")
+        if len(password) < 12: raise ValueError("La contraseña necesita al menos 12 caracteres")
+        if role not in ("admin","usuario"): raise ValueError("Rol inválido")
+        row = {"id":ident(),"username":username,"password_hash":password_hash(password),
+               "role":role,"active":1,"created_at":stamp()}
+        with self.connection() as conn:
+            if self.one(conn,"SELECT id FROM inv_users WHERE username=:username",{"username":username}):
+                raise ValueError("Ese usuario ya existe")
+            self.execute(conn,"""INSERT INTO inv_users (id,username,password_hash,role,active,created_at)
+                VALUES (:id,:username,:password_hash,:role,:active,:created_at)""",row)
+        return {k:row[k] for k in ("id","username","role","active","created_at")}
+
+    def update_user(self, user_id, data, actor_id):
+        with self.connection() as conn:
+            user = self.one(conn,"SELECT * FROM inv_users WHERE id=:id",{"id":user_id})
+            if not user: raise ValueError("Usuario no encontrado")
+            role = str(data.get("role",user["role"]))
+            active = int(data.get("active",user["active"]))
+            password = str(data.get("password", ""))
+            if role not in ("admin","usuario") or active not in (0,1): raise ValueError("Rol o estado inválido")
+            if password and len(password) < 12: raise ValueError("La contraseña necesita al menos 12 caracteres")
+            if user_id == actor_id and (role != "admin" or not active):
+                raise ValueError("No puedes quitarte tu propio acceso de administrador")
+            if user["role"] == "admin" and (role != "admin" or not active):
+                count = self.one(conn,"SELECT COUNT(*) AS n FROM inv_users WHERE role='admin' AND active=1")["n"]
+                if count <= 1: raise ValueError("Debe quedar al menos un administrador activo")
+            self.execute(conn,"UPDATE inv_users SET role=:role,active=:active WHERE id=:id",
+                         {"id":user_id,"role":role,"active":active})
+            if password:
+                self.execute(conn,"UPDATE inv_users SET password_hash=:password_hash WHERE id=:id",
+                             {"id":user_id,"password_hash":password_hash(password)})
+            return {"id":user_id,"username":user["username"],"role":role,"active":active}
+
+    def change_password(self, user_id, current, new):
+        if len(new) < 12: raise ValueError("La contraseña nueva necesita al menos 12 caracteres")
+        with self.connection() as conn:
+            user = self.one(conn,"SELECT password_hash FROM inv_users WHERE id=:id",{"id":user_id})
+            if not user or not verify_password(current,user["password_hash"]):
+                raise ValueError("La contraseña actual es incorrecta")
+            self.execute(conn,"UPDATE inv_users SET password_hash=:password_hash WHERE id=:id",
+                         {"id":user_id,"password_hash":password_hash(new)})
 
     def seed(self, conn):
         categories = ["Tecnología", "Oficina", "Hogar", "Accesorios", "Audio"]

@@ -1,0 +1,43 @@
+ROLES Y PERMISOS — PROYECTO FINAL DE BASES DE DATOS
+
+APP 1: INVENTARIO STUDIO (web + Oracle FreeSQL)
+URL: https://inventario-studio-oracle.onrender.com
+
+ADMINISTRADOR (usuario inicial: admin)
+- Consulta productos, categorías, proveedores, clientes, existencias, movimientos y ventas.
+- Crea y modifica productos, precios, costos y stock mínimo.
+- Registra entradas y salidas de mercancía.
+- Crea categorías, proveedores, clientes y ventas; consulta e imprime comprobantes.
+- Consulta ingresos, costos y ganancias; exporta el inventario a CSV.
+- Crea cuentas de administrador o usuario normal; cambia roles, desactiva cuentas y restablece contraseñas.
+- Cambia su propia contraseña.
+
+USUARIO NORMAL (usuario inicial: usuario)
+- Consulta el catálogo, precios de venta, existencias, movimientos, clientes y ventas.
+- Registra clientes y ventas; consulta e imprime comprobantes.
+- Cambia su propia contraseña.
+- No puede modificar productos, precios, costos, categorías, proveedores ni existencias.
+- No puede gestionar cuentas, consultar ganancias/costos ni abrir reportes administrativos.
+
+APP 2: NEXO (escritorio Python + MongoDB Atlas)
+INICIO: colabora-desktop/iniciar.bat
+
+ADMINISTRADOR DEL ESPACIO (rol interno: owner; usuario inicial: emmanuel)
+- Crea espacios y canales, y agrega personas como usuarios normales.
+- Publica actualizaciones, preguntas, anuncios e hitos, con fotos y archivos adjuntos.
+- Crea y asigna tareas, y cambia el estado de cualquier tarea del espacio.
+- Consulta publicaciones, comentarios, reacciones, archivos, miembros y notificaciones.
+- Elimina sus publicaciones y otras publicaciones visibles del espacio.
+- Cambia su propia contraseña.
+
+USUARIO NORMAL DEL ESPACIO (rol interno: member; usuarios iniciales: lucia, daniel y mara)
+- Publica actualizaciones y preguntas dirigidas al equipo o a personas concretas.
+- Adjunta y descarga archivos/fotos visibles, comenta y reacciona.
+- Consulta canales, publicaciones, miembros, tareas y notificaciones a los que tiene acceso.
+- Cambia el estado de las tareas asignadas a su cuenta y elimina sus propias publicaciones.
+- Cambia su propia contraseña.
+- No puede crear espacios o canales, agregar personas, publicar anuncios/hitos ni crear/asignar tareas.
+- No puede cambiar tareas ajenas ni eliminar publicaciones de otras personas.
+
+Las contraseñas iniciales están guardadas solo en archivos locales excluidos de GitHub:
+inventario-web/.inventario-access y colabora-desktop/.nexo-owner.
