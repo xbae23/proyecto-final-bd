@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: inventario-studio
+    name: inventario-studio-oracle
     runtime: python
     plan: free
     rootDir: inventario-web
