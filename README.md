@@ -33,6 +33,8 @@ Ejecuta `iniciar.bat` y abre `http://127.0.0.1:8050`. Sin `FREESQL_DSN`, la app 
 
 El esquema está en `inventario-web/schema.oracle.sql`; consultas para demostrar SQL en `inventario-web/consultas.oracle.sql`.
 
+**Ver las tablas en Oracle FreeSQL 26ai:** abre el SQL Worksheet con el esquema `SQL_19SALASDECHEM_SCHEMA_9X4FD`, selecciona `My Schema > Tables` y pulsa el icono de actualizar del Navigator. Las ocho tablas `INV_*` pertenecen a ese esquema. Para comprobar los datos, ejecuta `SELECT COUNT(*) FROM INV_PRODUCTS;` (el resultado inicial es 16). La web publicada usa ese mismo esquema: los cambios hechos en la web se reflejan al volver a ejecutar la consulta en FreeSQL.
+
 ## Nexo
 
 Aplicación Python con espacios, canales, publicaciones generales o dirigidas a una persona, preguntas, hitos, comentarios, reacciones, tablero de tareas, miembros, notificaciones y biblioteca de archivos. Las fotos y documentos se guardan en GridFS, con límite de 5 MB por archivo para cuidar el nivel gratuito de Atlas.

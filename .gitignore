@@ -1,4 +1,6 @@
 **/.env
+**/.env.nuevo
+**/.env.anterior
 **/.inventario-access
 **/.nexo-owner
 **/.venv/
